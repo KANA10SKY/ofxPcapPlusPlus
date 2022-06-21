@@ -8,18 +8,22 @@ meta:
 common:
 
 vs:
-# ???? make Error
 	# pcapcpp
 	ADDON_INCLUDES = libs/pcapplusplus-22.05-windows-vs2019/header
 	ADDON_LIBS = libs/pcapplusplus-22.05-windows-vs2019/$()$(PlatformTarget)/$(Configuration)/Common++.lib
 	ADDON_LIBS += libs/pcapplusplus-22.05-windows-vs2019/$()$(PlatformTarget)/$(Configuration)/Packet++.lib
 	ADDON_LIBS += libs/pcapplusplus-22.05-windows-vs2019/$()$(PlatformTarget)/$(Configuration)/Pcap++.lib
 
-	# winpcap
-	ADDON_INCLUDES += libs/WpdPack/Include
-	ADDON_LIBS += libs/WpdPack/Lib/$()$(PlatformTarget)/Packet.lib
-	ADDON_LIBS += libs/WpdPack/Lib/$()$(PlatformTarget)/wpcap.lib
+	## winpcap
+	#ADDON_INCLUDES += libs/WpdPack/Include
+	#ADDON_LIBS += libs/WpdPack/Lib/$()$(PlatformTarget)/Packet.lib
+	#ADDON_LIBS += libs/WpdPack/Lib/$()$(PlatformTarget)/wpcap.lib
+	# npcap
+	ADDON_INCLUDES += libs/npcap-sdk-1.12/Include
+	ADDON_LIBS += libs/npcap-sdk-1.12/Lib/$()$(PlatformTarget)/Packet.lib
+	ADDON_LIBS += libs/npcap-sdk-1.12/Lib/$()$(PlatformTarget)/wpcap.lib
 	
+
 	# pthreads-win32
 	ADDON_INCLUDES += libs/pthreads-win32-master/Pre-built.2/include
 	ADDON_LIBS += libs/pthreads-win32-master/Pre-built.2/lib/pthreadVC2.lib
