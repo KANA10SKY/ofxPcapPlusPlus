@@ -1,7 +1,7 @@
 meta:
 	ADDON_NAME = ofxPcapPlusPlus
 	ADDON_DESCRIPTION = Addon for PcapPlusPlus
-	ADDON_AUTHOR = Kanato Sekiya
+	ADDON_AUTHOR = KANA10SKY
 	ADDON_TAGS = realsense
 	ADDON_URL = https://github.com/Kanato/ofxPcapPlusPlus
 
