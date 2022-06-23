@@ -6,10 +6,11 @@ meta:
 	ADDON_URL = https://github.com/Kanato/ofxPcapPlusPlus
 
 common:
+	ADDON_INCLUDES = src
 
 vs:
 	# pcapcpp
-	ADDON_INCLUDES = libs/pcapplusplus-22.05-windows-vs2019/header
+	ADDON_INCLUDES += libs/pcapplusplus-22.05-windows-vs2019/header
 	ADDON_LIBS = libs/pcapplusplus-22.05-windows-vs2019/$()$(PlatformTarget)/$(Configuration)/Common++.lib
 	ADDON_LIBS += libs/pcapplusplus-22.05-windows-vs2019/$()$(PlatformTarget)/$(Configuration)/Packet++.lib
 	ADDON_LIBS += libs/pcapplusplus-22.05-windows-vs2019/$()$(PlatformTarget)/$(Configuration)/Pcap++.lib
