@@ -21,7 +21,7 @@ namespace {
 		using namespace std::chrono;
 		//return std::chrono::duration<double, std::ratio<1,1>>(duration_cast<nanoseconds>(seconds{ ts.tv_sec } + nanoseconds{ ts.tv_nsec }));
 		//return duration_cast<duration<double>>(seconds{ ts.tv_sec } + nanoseconds{ ts.tv_nsec });
-		using seconds_f = chrono::duration<float, std::ratio<1, 1>>;
+		using seconds_f = duration<float, std::ratio<1, 1>>;
 		return chrono_duration(seconds{ ts.tv_sec } + nanoseconds{ ts.tv_nsec });
 	}
 	// constexpr std::chrono::nanoseconds timespecToDuration(timespec const& ts) {
@@ -35,29 +35,64 @@ namespace {
 	//}
 	const float get_duration_seconds_f(std::chrono::system_clock::time_point const& t1, std::chrono::system_clock::time_point const& t0) {
 	}
+	const double calc_timespan(pcpp::RawPacket const& packet1, pcpp::RawPacket const& packet0) {
+		auto calc_timespec = [&]() {
+			auto ts0 = ts2sec(packet0.getPacketTimeStamp());
+			auto ts1 = ts2sec(packet1.getPacketTimeStamp());
+			return ts1 - ts0;
+		};
+		auto calc_chrono = [&]() {
+			auto tp0 = timespecToDuration(packet0.getPacketTimeStamp());
+			auto tp1 = timespecToDuration(packet1.getPacketTimeStamp());
+			return (tp1 - tp0).count();
+		};
+		return calc_timespec();
+		return calc_chrono();
+	}
+	const double calc_time(pcpp::RawPacketVector const& packets, const int id) {return calc_timespan(*packets.at(id), *packets.at(0));}
 }
 
 class ofxPcapPlusPlus_UdpReplay {
 private:
-	pcpp::PcapNgFileReaderDevice reader;
+	pcpp::IFileReaderDevice* reader;
 	//std::unique_ptr<pcpp::PcapNgFileReaderDevice> reader;
+	pcpp::RawPacketVector rawPackets;
+
 public:
-	ofxPcapPlusPlus_UdpReplay(string src_pcapng) : reader(src_pcapng) {
+	//ofxPcapPlusPlus_UdpReplay(string src_pcapng) : reader(src_pcapng) {
+	ofxPcapPlusPlus_UdpReplay(string src_pcap) {
 		//reader = make_unique<std::decay_t<decltype(*reader)>>(src_pcapng);
-		if(!reader.open()) {
-			std::cerr << "Error opening the pcap file" << std::endl;
+		reader = pcpp::IFileReaderDevice::getReader(src_pcap);
+		if (reader == NULL) {
+			std::cerr << "Cannot determine reader for file type: " << src_pcap << std::endl;
 			return;
 		}
+		if (!reader->open()) {
+			std::cerr << "Error opening the pcap file: " << src_pcap << std::endl;
+			return;
+		}
+		if (!reader->getNextPackets(rawPackets)) {
+			std::cerr << "Couldn't read the first packet in the file" << std::endl;
+			return;
+		};
 	};
 	~ofxPcapPlusPlus_UdpReplay() {
 		// close the file
-		reader.close();
+		reader->close();
+		delete reader;
 	};
 
-	void read_test() {
+	void read_test_v2() {
+		//std::cout << std::fixed << std::setprecision(6) << "Time ts0-ts1:'" << calc_timespan(*rawPackets.at(110364), *rawPackets.at(0)) << "'" << std::endl;
+		std::cout << std::fixed << std::setprecision(6) << "Time ts0-ts1:'" << calc_time(rawPackets, 110364) << "'" << std::endl;
+		return;
+	}
+
+private:
+	void read_test_v1() {
 		// read the first (and only) packet from the file
 		pcpp::RawPacket rawPacket;
-		if (!reader.getNextPacket(rawPacket))
+		if (!reader->getNextPacket(rawPacket))
 		{
 			std::cerr << "Couldn't read the first packet in the file" << std::endl;
 			return;
@@ -79,7 +114,7 @@ public:
 		}
 
 		pcpp::RawPacketVector rawPackets;
-		reader.getNextPackets(rawPackets);
+		reader->getNextPackets(rawPackets);
 
 		auto timestampcalc_stdchrono = [&]() {
 			auto rawPacket1 = rawPackets.at(0);
@@ -108,6 +143,7 @@ public:
 
 		timestampcalc_stdchrono();
 		timestampcalc_timespec();
+		std::cout << std::fixed << std::setprecision(6) << "Time ts0-ts1:'" << calc_timespan(*rawPackets.at(110363), rawPacket) << "'" << std::endl;
 		return;
 	}
 };
@@ -115,7 +151,7 @@ public:
 namespace OFX_PCAPPLUSPLUS_DEV {
 	inline void run_test() {
 		ofxPcapPlusPlus_UdpReplay udpreplay("data/ptzcam_live20220619_0.pcapng");
-		udpreplay.read_test();
+		udpreplay.read_test_v2();
 	}
 }
 
