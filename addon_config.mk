@@ -7,11 +7,13 @@ meta:
 
 common:
 	ADDON_INCLUDES = src
+	#ADDON_LIBS = ""
+	#ADDON_DLLS_TO_COPY = ""
 
 vs:
 	# pcapcpp
 	ADDON_INCLUDES += libs/pcapplusplus-22.05-windows-vs2019/header
-	ADDON_LIBS = libs/pcapplusplus-22.05-windows-vs2019/$()$(PlatformTarget)/$(Configuration)/Common++.lib
+	ADDON_LIBS += libs/pcapplusplus-22.05-windows-vs2019/$()$(PlatformTarget)/$(Configuration)/Common++.lib
 	ADDON_LIBS += libs/pcapplusplus-22.05-windows-vs2019/$()$(PlatformTarget)/$(Configuration)/Packet++.lib
 	ADDON_LIBS += libs/pcapplusplus-22.05-windows-vs2019/$()$(PlatformTarget)/$(Configuration)/Pcap++.lib
 
@@ -23,13 +25,24 @@ vs:
 	ADDON_INCLUDES += libs/npcap-sdk-1.12/Include
 	ADDON_LIBS += libs/npcap-sdk-1.12/Lib/$()$(PlatformTarget)/Packet.lib
 	ADDON_LIBS += libs/npcap-sdk-1.12/Lib/$()$(PlatformTarget)/wpcap.lib
+	ADDON_DLLS_TO_COPY += libs/npcap-sdk-1.12/Lib/$()$(PlatformTarget)/wpcap.dll
+	ADDON_DLLS_TO_COPY += libs/npcap-sdk-1.12/Lib/$()$(PlatformTarget)/packet.dll
 	
 
 	# pthreads-win32
-	ADDON_INCLUDES += libs/pthreads-win32-master/Pre-built.2/include
-	ADDON_LIBS += libs/pthreads-win32-master/Pre-built.2/lib/pthreadVC2.lib
-	#ADDON_LIBS_EXCLUDE = libs/pthreads-win32-master/Pre-built.2/lib/pthreadVCE2.lib
+	# ADDON_INCLUDES += libs/pthreads-win32-master/Pre-built.2/include
+	# ADDON_LIBS += libs/pthreads-win32-master/Pre-built.2/lib/pthreadVC2.lib
+	##ADDON_LIBS_EXCLUDE = libs/pthreads-win32-master/Pre-built.2/lib/pthreadVCE2.lib
 	#ADDON_LIBS_EXCLUDE += libs/pthreads-win32-master/Pre-built.2/lib/pthreadVSE2.lib
+	#ADDON_INCLUDES += libs/pthreads-w32-2-9-1-release/Pre-built.2/include
+	#ADDON_LIBS += libs/pthreads-w32-2-9-1-release/Pre-built.2/lib/$()$(PlatformTarget)/pthreadVC2.lib
+	#ADDON_DLLS_TO_COPY += libs/pthreads-w32-2-9-1-release/Pre-built.2/dll/$()$(PlatformTarget)/pthreadVC2.dll
+	#ADDON_DLLS_TO_COPY += libs/pthreads-w32-2-9-1-release/Pre-built.2/dll/$()$(PlatformTarget)/pthreadGC2.dll
+	ADDON_LIBS += libs/pthreads-w32-2-9-1-release/Pre-built.2/lib/$()$(PlatformTarget)/pthreadVC2.lib
+	#ADDON_INCLUDES_EXCLUDE += libs/pthreads-w32-2-9-1-release/pthreads.2/%
+	#ADDON_DLLS_TO_COPY = libs/pthreads-w32-2-9-1-release/Pre-built.2/dll/$()$(PlatformTarget)/pthreadVC2.dll
+	#ADDON_DLLS_TO_COPY += libs/pthreads-w32-2-9-1-release/Pre-built.2/dll/$()$(PlatformTarget)/%
+	#ADDON_DLLS_TO_COPY += lfibs/pthreads-w32-2-9-1-release/Pre-built.2/dll/$()$(PlatformTarget)/pthreadVC2.dll
 
 #############################################################################################################################
 # ???? make Error

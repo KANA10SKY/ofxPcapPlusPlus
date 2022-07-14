@@ -9,12 +9,12 @@
 #include "IPv4Layer.h"
 #include "Packet.h"
 #include "PcapFileDevice.h"
-//#include "WinPcapLiveDevice.h"
+#include "WinPcapLiveDevice.h"
 #include "PcapLiveDeviceList.h"
 #include "UdpLayer.h"
 
 #include "ofEventUtils.h"
-#include "ofxXmlSettings.h"
+//#include "ofxXmlSettings.h"
 
 namespace {
 	const double ts2sec(timespec const& ts) { return ts.tv_sec + (double)ts.tv_nsec * 1e-9; }
@@ -40,6 +40,7 @@ namespace {
 	//	return duration_cast<chrono_time_unit>(seconds{ ts.tv_sec } + nanoseconds{ ts.tv_nsec });
 	//}
 	const float get_duration_seconds_f(std::chrono::system_clock::time_point const& t1, std::chrono::system_clock::time_point const& t0) {
+		return (float)(t1 - t0).count();
 	}
 	const double calc_timespan(pcpp::RawPacket const& packet1, pcpp::RawPacket const& packet0) {
 		auto calc_timespec = [&]() {
@@ -157,6 +158,10 @@ private:
 			if (ip != pcpp::IPv4Address::Zero)
 				ether = _dev;
 		}
+		if (!ether) {
+			cerr << "Couldn't find PcapLiveDevice" << endl;
+			return false;
+		}
 		localhost = ether->getIPv4Address();
 		//dstIP = pcpp::PcapLiveDeviceList::getInstance().getPcapLiveDeviceByIp(_dstIP);
 		dstIP = pcpp::IPv4Address(_dstIP);
@@ -229,7 +234,7 @@ public:
 	}
 	bool try_sendNext(double const& current_sec, const u_short& dstPort, bool const& bPrint = false) {
 		//while(calc_time_next(rawPackets, firstPacket))
-		if (!rawPackets.size() or id_next >= rawPackets.size())
+		if (!rawPackets.size() or id_next >= rawPackets.size() or !ether)
 			return false;
 		while (id_next < rawPackets.size() and calc_time(rawPackets, id_next) <= current_sec) {
 			if (!send_packet(id_next, dstPort))
